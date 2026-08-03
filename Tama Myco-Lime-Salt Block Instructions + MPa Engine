@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tama Myco-Lime-Salt Block Instructions + MPa Engine</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 20px; background:#111; color:#eee; }
+    h1 { font-size: 1.6rem; }
+    h2 { font-size: 1.2rem; margin-top: 24px; }
+    p { line-height: 1.4; }
+    ol, ul { margin-left: 20px; }
+    label { display:block; margin-top:10px; }
+    input, select { width: 220px; padding:4px; margin-top:4px; background:#222; color:#eee; border:1px solid #444; }
+    .row { display:flex; flex-wrap:wrap; gap:40px; margin-top:20px; }
+    .card { border:1px solid #444; padding:16px; border-radius:8px; background:#181818; flex:1 1 280px; }
+    button { margin-top:16px; padding:8px 16px; background:#3a7; color:#000; border:none; border-radius:4px; cursor:pointer; font-weight:bold; }
+    button:hover { background:#4b8; }
+    .result { margin-top:20px; padding:16px; border-radius:8px; background:#202020; border:1px solid #555; }
+    .lane { font-weight:bold; color:#9cf; }
+    .band { font-weight:bold; color:#fc9; }
+    .note { font-size:0.85rem; color:#aaa; margin-top:8px; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .materials { background:#181818; border:1px solid #444; padding:16px; border-radius:8px; margin-top:16px; }
+  </style>
+</head>
+<body>
+  <h1>Tama Mycelium–Lime–Salt Block Instructions</h1>
+
+  <h2>1. Target block and mold</h2>
+  <p>
+    Use a metal mold matching the Thingiverse block geometry (approx. 300&nbsp;mm × 600&nbsp;mm × 200&nbsp;mm).
+    The mold should be rigid, able to take high compression (20–30&nbsp;tons), and have small vents for water escape.
+  </p>
+
+  <div class="materials">
+    <h2>2. Materials (per 1&nbsp;L of packed block volume)</h2>
+    <ul>
+      <li>Hemp shiv or fibers: 0.20–0.25&nbsp;kg (dry)</li>
+      <li>Mycelium spawn (Pleurotus or similar): 0.05–0.08&nbsp;kg</li>
+      <li>Water: 0.18–0.22&nbsp;kg</li>
+      <li>Hydrated/hydraulic lime (growth phase): 0.01–0.02&nbsp;kg</li>
+      <li>Salt (NaCl, fine): 0.001–0.003&nbsp;kg (trace during growth)</li>
+      <li>Extra lime for post-growth bump: 0.05–0.10&nbsp;kg per liter of colonized material</li>
+      <li>Optional extra salt post-growth: 0.005–0.01&nbsp;kg per liter</li>
+    </ul>
+  </div>
+
+  <h2>3. Step-by-step process</h2>
+  <ol>
+    <li>
+      <strong>Prepare substrate</strong><br>
+      Mix dry hemp with water until evenly moist (no free pooling). Add the small growth-phase lime (5–8% of dry mass)
+      and trace salt (0.5–1.5% of dry mass). Aim for a workable, slightly loose mix.
+    </li>
+    <li>
+      <strong>Inoculate with mycelium</strong><br>
+      Add mycelium spawn and mix gently so it is evenly distributed without completely pulverizing the fibers.
+      Pack the mix into breathable bags or trays (not yet in the metal mold).
+    </li>
+    <li>
+      <strong>Growth phase</strong><br>
+      Incubate at 22–26&nbsp;°C, 80–95% relative humidity for 5–10&nbsp;days, until the hemp is fully colonized
+      and bound by white mycelial growth.
+    </li>
+    <li>
+      <strong>Post-growth mineral bump</strong><br>
+      Break up the colonized mass lightly (keep the network, remove big voids). Add extra lime so total lime reaches
+      about 15–20% of dry mass. Optionally add a small extra salt dose (up to ~1% of dry mass) and mix thoroughly.
+    </li>
+    <li>
+      <strong>Load into metal mold</strong><br>
+      Fill the mold with the bio-mineral mix. Vibrate or tap the mold to release trapped air and ensure uniform packing.
+    </li>
+    <li>
+      <strong>High compression</strong><br>
+      Apply 20–30&nbsp;tons of compression using a press. Hold for 5–20&nbsp;minutes to densify the block and
+      expel excess water. This step is a major driver of compressive strength.
+    </li>
+    <li>
+      <strong>Controlled drying</strong><br>
+      Dry the compressed block at 40–60&nbsp;°C for 12–24&nbsp;hours (in-mold or demolded) to remove free water and
+      stop biological activity while avoiding cracking.
+    </li>
+    <li>
+      <strong>Heat-press stage</strong><br>
+      Re-press the block at 10–20&nbsp;tons while heating to 120–160&nbsp;°C for 30–90&nbsp;minutes.
+      This locks in stiffness, reduces residual moisture, and strengthens the bio-mineral matrix.
+    </li>
+    <li>
+      <strong>Curing for lime carbonation</strong><br>
+      Store the block for 7–28&nbsp;days in moderate humidity (50–70% RH) with access to air/CO₂.
+      Lime continues to carbonate, increasing long-term compressive strength and stability.
+    </li>
+    <li>
+      <strong>Testing and iteration</strong><br>
+      Measure compressive strength (MPa). Adjust lime %, compression, and heat-press parameters based on results
+      to move toward your desired strength band.
+    </li>
+  </ol>
+
+  <h2>4. Tama Myco-Lime-Salt MPa Engine</h2>
+  <p>Use this engine to explore parameter combinations and estimate MPa bands before you run physical trials.</p>
+
+  <div class="row">
+    <div class="card">
+      <h2>Bio lane inputs</h2>
+      <label>
+        Mycelium species
+        <select id="species">
+          <option value="pleurotus">Pleurotus (oyster)</option>
+          <option value="ganoderma">Ganoderma</option>
+          <option value="other">Other / unknown</option>
+        </select>
+      </label>
+      <label>
+        Lime % of dry mass (total)
+        <input id="limePct" type="number" min="0" max="40" step="1" value="18">
+      </label>
+      <label>
+        Salt % of dry mass (total)
+        <input id="saltPct" type="number" min="0" max="10" step="0.5" value="1">
+      </label>
+      <label>
+        Growth temperature (°C)
+        <input id="growthTemp" type="number" min="10" max="35" step="1" value="24">
+      </label>
+      <label>
+        Growth days
+        <input id="growthDays" type="number" min="1" max="21" step="1" value="7">
+      </label>
+    </div>
+
+    <div class="card">
+      <h2>Process lane inputs</h2>
+      <div class="grid">
+        <label>
+          Compression (tons on mold)
+          <input id="compressionTons" type="number" min="0" max="50" step="1" value="25">
+        </label>
+        <label>
+          Drying temp (°C)
+          <input id="dryTemp" type="number" min="20" max="90" step="1" value="55">
+        </label>
+        <label>
+          Heat-press temp (°C)
+          <input id="heatTemp" type="number" min="60" max="220" step="5" value="140">
+        </label>
+        <label>
+          Heat-press time (min)
+          <input id="heatTime" type="number" min="0" max="240" step="10" value="60">
+        </label>
+      </div>
+      <label>
+        Curing days (lime carbonation)
+        <input id="cureDays" type="number" min="0" max="60" step="1" value="21">
+      </label>
+      <button id="runBtn">Run Tama Engine</button>
+    </div>
+  </div>
+
+  <div id="result" class="result" style="display:none;"></div>
+
+  <script>
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+    function predictMPa(inputs) {
+      let score = 0;
+
+      // Species
+      if (inputs.species === 'pleurotus') score += 1.0;
+      else if (inputs.species === 'ganoderma') score += 0.8;
+      else score += 0.6;
+
+      // Lime curve
+      const lime = clamp(inputs.limePct, 0, 40);
+      if (lime < 5) score += 0.2;
+      else if (lime < 12) score += 0.8;
+      else if (lime <= 22) score += 1.4;
+      else score += 1.0;
+
+      // Salt curve
+      const salt = clamp(inputs.saltPct, 0, 10);
+      if (salt <= 1.5) score += 0.6;
+      else if (salt <= 3) score += 0.2;
+      else score -= 0.4;
+
+      // Growth quality
+      const gt = clamp(inputs.growthTemp, 10, 35);
+      const gd = clamp(inputs.growthDays, 1, 21);
+      let growthScore = 0;
+      if (gt >= 20 && gt <= 28) growthScore += 0.6;
+      else growthScore += 0.2;
+      if (gd >= 5 && gd <= 12) growthScore += 0.6;
+      else if (gd > 12) growthScore += 0.4;
+      else growthScore += 0.1;
+      score += growthScore;
+
+      // Compression
+      const comp = clamp(inputs.compressionTons, 0, 50);
+      if (comp < 5) score += 0.2;
+      else if (comp < 15) score += 0.9;
+      else if (comp < 25) score += 1.6;
+      else score += 2.0;
+
+      // Thermal lane
+      const dryT = clamp(inputs.dryTemp, 20, 90);
+      const heatT = clamp(inputs.heatTemp, 60, 220);
+      const heatTime = clamp(inputs.heatTime, 0, 240);
+
+      let thermalScore = 0;
+      if (dryT >= 40 && dryT <= 65) thermalScore += 0.4;
+      else thermalScore += 0.2;
+
+      if (heatT >= 110 && heatT <= 170 && heatTime >= 30) thermalScore += 1.2;
+      else if (heatT >= 90 && heatT < 110) thermalScore += 0.6;
+      else thermalScore += 0.2;
+
+      score += thermalScore;
+
+      // Curing
+      const cureDays = clamp(inputs.cureDays, 0, 60);
+      if (cureDays >= 7 && cureDays <= 30) score += 0.8;
+      else if (cureDays > 30) score += 0.6;
+      else score += 0.2;
+
+      // Map score to MPa band
+      let mpaMin, mpaMax, lane;
+      if (score < 3) {
+        mpaMin = 0.5; mpaMax = 5;
+        lane = 'Lane A – Bio-dominant (soft, insulating block)';
+      } else if (score < 5) {
+        mpaMin = 5; mpaMax = 20;
+        lane = 'Lane B – Balanced bio–mineral (structural + insulating)';
+      } else {
+        mpaMin = 20; mpaMax = 40;
+        lane = 'Lane C – Mineral-dominant high compression (max MPa, less “alive”)';
+      }
+
+      return {
+        score: score.toFixed(2),
+        mpaMin,
+        mpaMax,
+        lane
+      };
+    }
+
+    function describeLane(inputs, out) {
+      const parts = [];
+
+      if (inputs.limePct < 10) parts.push('low lime → softer, more bio character');
+      else if (inputs.limePct <= 22) parts.push('mid lime sweet spot → strong bio-mineral matrix');
+      else parts.push('high lime → stiff, more brittle mineral block');
+
+      if (inputs.saltPct <= 1.5) parts.push('salt kept low → mycelium growth mostly safe');
+      else parts.push('salt elevated → growth inhibition risk, rely on mineral strength');
+
+      if (inputs.compressionTons >= 20) parts.push('high compression → densified structure, chasing concrete-like MPa');
+      else if (inputs.compressionTons >= 10) parts.push('moderate compression → mid-strength structural block');
+      else parts.push('low compression → foam-like, more acoustic/thermal than structural');
+
+      if (inputs.heatTemp >= 110 && inputs.heatTemp <= 170 && inputs.heatTime >= 30) {
+        parts.push('full heat-press → locked-in stiffness and reduced water');
+      } else {
+        parts.push('mild heat → more flexible, lower MPa but gentler processing');
+      }
+
+      return parts;
+    }
+
+    document.getElementById('runBtn').addEventListener('click', () => {
+      const inputs = {
+        species: document.getElementById('species').value,
+        limePct: parseFloat(document.getElementById('limePct').value || '0'),
+        saltPct: parseFloat(document.getElementById('saltPct').value || '0'),
+        growthTemp: parseFloat(document.getElementById('growthTemp').value || '0'),
+        growthDays: parseFloat(document.getElementById('growthDays').value || '0'),
+        compressionTons: parseFloat(document.getElementById('compressionTons').value || '0'),
+        dryTemp: parseFloat(document.getElementById('dryTemp').value || '0'),
+        heatTemp: parseFloat(document.getElementById('heatTemp').value || '0'),
+        heatTime: parseFloat(document.getElementById('heatTime').value || '0'),
+        cureDays: parseFloat(document.getElementById('cureDays').value || '0')
+      };
+
+      const out = predictMPa(inputs);
+      const laneNotes = describeLane(inputs, out);
+
+      const div = document.getElementById('result');
+      div.style.display = 'block';
+      div.innerHTML = `
+        <div class="lane">Recommended process lane: ${out.lane}</div>
+        <div class="band">Predicted compressive strength band: ~${out.mpaMin.toFixed(1)}–${out.mpaMax.toFixed(1)} MPa</div>
+        <div class="note">Tama score: ${out.score} (higher → stronger, more mineral-dominant)</div>
+        <hr style="border-color:#333; margin:12px 0;">
+        <div class="note">
+          Lane interpretation:
+          <ul>
+            ${laneNotes.map(n => `<li>${n}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="note">
+          Use these predictions to choose trial recipes for your metal mold, then refine with real MPa tests.
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>

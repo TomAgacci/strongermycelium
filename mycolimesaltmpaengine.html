@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tama Myco-Lime-Salt MPa Engine</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 20px; background:#111; color:#eee; }
+    h1 { font-size: 1.6rem; }
+    label { display:block; margin-top:10px; }
+    input, select { width: 220px; padding:4px; margin-top:4px; background:#222; color:#eee; border:1px solid #444; }
+    .row { display:flex; flex-wrap:wrap; gap:40px; margin-top:20px; }
+    .card { border:1px solid #444; padding:16px; border-radius:8px; background:#181818; flex:1 1 280px; }
+    button { margin-top:16px; padding:8px 16px; background:#3a7; color:#000; border:none; border-radius:4px; cursor:pointer; font-weight:bold; }
+    button:hover { background:#4b8; }
+    .result { margin-top:20px; padding:16px; border-radius:8px; background:#202020; border:1px solid #555; }
+    .lane { font-weight:bold; color:#9cf; }
+    .band { font-weight:bold; color:#fc9; }
+    .note { font-size:0.85rem; color:#aaa; margin-top:8px; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  </style>
+</head>
+<body>
+  <h1>Tama Mycelium–Lime–Salt MPa Engine</h1>
+  <p>Inputs: species, lime %, salt %, compression, temps → Outputs: predicted MPa band + recommended process lane.</p>
+
+  <div class="row">
+    <div class="card">
+      <h2>Bio lane inputs</h2>
+      <label>
+        Mycelium species
+        <select id="species">
+          <option value="pleurotus">Pleurotus (oyster)</option>
+          <option value="ganoderma">Ganoderma</option>
+          <option value="other">Other / unknown</option>
+        </select>
+      </label>
+      <label>
+        Lime % of dry mass (total)
+        <input id="limePct" type="number" min="0" max="40" step="1" value="18">
+      </label>
+      <label>
+        Salt % of dry mass (total)
+        <input id="saltPct" type="number" min="0" max="10" step="0.5" value="1">
+      </label>
+      <label>
+        Growth temperature (°C)
+        <input id="growthTemp" type="number" min="10" max="35" step="1" value="24">
+      </label>
+      <label>
+        Growth days
+        <input id="growthDays" type="number" min="1" max="21" step="1" value="7">
+      </label>
+    </div>
+
+    <div class="card">
+      <h2>Process lane inputs</h2>
+      <div class="grid">
+        <label>
+          Compression (tons on mold)
+          <input id="compressionTons" type="number" min="0" max="50" step="1" value="25">
+        </label>
+        <label>
+          Drying temp (°C)
+          <input id="dryTemp" type="number" min="20" max="90" step="1" value="55">
+        </label>
+        <label>
+          Heat-press temp (°C)
+          <input id="heatTemp" type="number" min="60" max="220" step="5" value="140">
+        </label>
+        <label>
+          Heat-press time (min)
+          <input id="heatTime" type="number" min="0" max="240" step="10" value="60">
+        </label>
+      </div>
+      <label>
+        Curing days (lime carbonation)
+        <input id="cureDays" type="number" min="0" max="60" step="1" value="21">
+      </label>
+      <button id="runBtn">Run Tama Engine</button>
+    </div>
+  </div>
+
+  <div id="result" class="result" style="display:none;"></div>
+
+  <script>
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+    function predictMPa(inputs) {
+      // Base score from species
+      let score = 0;
+      if (inputs.species === 'pleurotus') score += 1.0;
+      else if (inputs.species === 'ganoderma') score += 0.8;
+      else score += 0.6;
+
+      // Lime: sweet spot ~15–22%
+      const lime = clamp(inputs.limePct, 0, 40);
+      if (lime < 5) score += 0.2;
+      else if (lime < 12) score += 0.8;
+      else if (lime <= 22) score += 1.4;
+      else score += 1.0; // very high lime: strong but brittle
+
+      // Salt: penalize above ~2%
+      const salt = clamp(inputs.saltPct, 0, 10);
+      if (salt <= 1.5) score += 0.6;
+      else if (salt <= 3) score += 0.2;
+      else score -= 0.4;
+
+      // Growth quality: temp + days
+      const gt = clamp(inputs.growthTemp, 10, 35);
+      const gd = clamp(inputs.growthDays, 1, 21);
+      let growthScore = 0;
+      if (gt >= 20 && gt <= 28) growthScore += 0.6;
+      else growthScore += 0.2;
+      if (gd >= 5 && gd <= 12) growthScore += 0.6;
+      else if (gd > 12) growthScore += 0.4;
+      else growthScore += 0.1;
+      score += growthScore;
+
+      // Compression: huge driver
+      const comp = clamp(inputs.compressionTons, 0, 50);
+      if (comp < 5) score += 0.2;
+      else if (comp < 15) score += 0.9;
+      else if (comp < 25) score += 1.6;
+      else score += 2.0;
+
+      // Thermal lane: drying + heat-press
+      const dryT = clamp(inputs.dryTemp, 20, 90);
+      const heatT = clamp(inputs.heatTemp, 60, 220);
+      const heatTime = clamp(inputs.heatTime, 0, 240);
+
+      let thermalScore = 0;
+      if (dryT >= 40 && dryT <= 65) thermalScore += 0.4;
+      else thermalScore += 0.2;
+
+      if (heatT >= 110 && heatT <= 170 && heatTime >= 30) thermalScore += 1.2;
+      else if (heatT >= 90 && heatT < 110) thermalScore += 0.6;
+      else thermalScore += 0.2;
+
+      score += thermalScore;
+
+      // Curing: lime carbonation
+      const cureDays = clamp(inputs.cureDays, 0, 60);
+      if (cureDays >= 7 && cureDays <= 30) score += 0.8;
+      else if (cureDays > 30) score += 0.6;
+      else score += 0.2;
+
+      // Map score → MPa band (conceptual)
+      // score ~ 1–3 → 0.5–5 MPa
+      // score ~ 3–5 → 5–20 MPa
+      // score ~ 5–7+ → 20–40+ MPa
+      let mpaMin, mpaMax, lane;
+      if (score < 3) {
+        mpaMin = 0.5; mpaMax = 5;
+        lane = 'Lane A – Bio-dominant (soft, insulating block)';
+      } else if (score < 5) {
+        mpaMin = 5; mpaMax = 20;
+        lane = 'Lane B – Balanced bio–mineral (structural + insulating)';
+      } else {
+        mpaMin = 20; mpaMax = 40;
+        lane = 'Lane C – Mineral-dominant high compression (max MPa, less “alive”)';
+      }
+
+      return {
+        score: score.toFixed(2),
+        mpaMin,
+        mpaMax,
+        lane
+      };
+    }
+
+    function describeLane(inputs, out) {
+      const parts = [];
+
+      // Lime lane
+      if (inputs.limePct < 10) parts.push('low lime → softer, more bio character');
+      else if (inputs.limePct <= 22) parts.push('mid lime sweet spot → strong bio-mineral matrix');
+      else parts.push('high lime → stiff, more brittle mineral block');
+
+      // Salt lane
+      if (inputs.saltPct <= 1.5) parts.push('salt kept low → mycelium growth mostly safe');
+      else parts.push('salt elevated → growth inhibition risk, rely on mineral strength');
+
+      // Compression lane
+      if (inputs.compressionTons >= 20) parts.push('high compression → densified structure, chasing concrete-like MPa');
+      else if (inputs.compressionTons >= 10) parts.push('moderate compression → mid-strength structural block');
+      else parts.push('low compression → foam-like, more acoustic/thermal than structural');
+
+      // Thermal lane
+      if (inputs.heatTemp >= 110 && inputs.heatTemp <= 170 && inputs.heatTime >= 30) {
+        parts.push('full heat-press → locked-in stiffness and reduced water');
+      } else {
+        parts.push('mild heat → more flexible, lower MPa but gentler processing');
+      }
+
+      return parts;
+    }
+
+    document.getElementById('runBtn').addEventListener('click', () => {
+      const inputs = {
+        species: document.getElementById('species').value,
+        limePct: parseFloat(document.getElementById('limePct').value || '0'),
+        saltPct: parseFloat(document.getElementById('saltPct').value || '0'),
+        growthTemp: parseFloat(document.getElementById('growthTemp').value || '0'),
+        growthDays: parseFloat(document.getElementById('growthDays').value || '0'),
+        compressionTons: parseFloat(document.getElementById('compressionTons').value || '0'),
+        dryTemp: parseFloat(document.getElementById('dryTemp').value || '0'),
+        heatTemp: parseFloat(document.getElementById('heatTemp').value || '0'),
+        heatTime: parseFloat(document.getElementById('heatTime').value || '0'),
+        cureDays: parseFloat(document.getElementById('cureDays').value || '0')
+      };
+
+      const out = predictMPa(inputs);
+      const laneNotes = describeLane(inputs, out);
+
+      const div = document.getElementById('result');
+      div.style.display = 'block';
+      div.innerHTML = `
+        <div class="lane">Recommended process lane: ${out.lane}</div>
+        <div class="band">Predicted compressive strength band: ~${out.mpaMin.toFixed(1)}–${out.mpaMax.toFixed(1)} MPa</div>
+        <div class="note">Tama score: ${out.score} (higher → stronger, more mineral-dominant)</div>
+        <hr style="border-color:#333; margin:12px 0;">
+        <div class="note">
+          Lane interpretation:
+          <ul>
+            ${laneNotes.map(n => `<li>${n}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="note">
+          This engine is conceptual: use it to design trials for your 300×600×200&nbsp;mm metal mold,
+          then back-calculate with real compression tests.
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>
